@@ -3,11 +3,12 @@
  * Plugin Name:         Ocean Extra
  * Plugin URI:          https://oceanwp.org/extension/ocean-extra/
  * Description:         Add extra features and flexibility to your OceanWP theme for a turbocharged premium experience and full control over every aspect of your website.
- * Version:             2.4.3
+ * Version:             2.4.5
  * Author:              OceanWP
  * Author URI:          https://oceanwp.org/
  * Requires at least:   5.6
  * Tested up to:        6.7
+ * OceanWP requires at least: 4.0.0
  * Text Domain: ocean-extra
  * Domain Path: /languages
  *
@@ -155,9 +156,7 @@ final class Ocean_Extra {
 			}
 			$required_theme_version = '3.3.3';
 
-			if ( ! empty( $current_theme_version ) && version_compare( $current_theme_version, '3.6.1', '<=' ) ) {
-				include_once $this->plugin_path . '/includes/update-message.php';
-			}
+			include_once $this->plugin_path . '/includes/update-message.php';
 
 			if ( file_exists( OE_PATH . '/includes/panel/theme-panel.php' ) ) {
 				require_once OE_PATH . '/includes/panel/theme-panel.php';
@@ -172,7 +171,6 @@ final class Ocean_Extra {
 			// require_once OE_PATH . '/includes/wizard/wizard.php';
 
 			require_once OE_PATH . '/includes/themepanel/theme-panel.php';
-
 
 			if ( ! empty( $current_theme_version ) && ! empty( $required_theme_version ) && version_compare( $current_theme_version, $required_theme_version , '>' ) ) {
 				require_once OE_PATH . '/includes/compatibility/ocean.php';
@@ -481,7 +479,6 @@ final class Ocean_Extra {
 			require_once OE_PATH . '/includes/adobe-font.php';
 			require_once OE_PATH . '/includes/preloader/customizer.php';
 			require_once OE_PATH . '/includes/customizer/customizer.php';
-			//require_once OE_PATH . '/includes/update-message.php';
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ), 999 );
 		}
@@ -820,6 +817,27 @@ function theme_version() {
 	// Return theme version.
 	return $theme->get( 'Version' );
 
+}
+
+function oe_get_theme_version() {
+
+	$theme = wp_get_theme();
+
+	$current_theme_version = '';
+
+	if ( 'OceanWP' == $theme->name || 'oceanwp' == $theme->template ) {
+
+		if ( get_template_directory() == get_stylesheet_directory() ) {
+			$current_theme_version  = $theme->get( 'Version' );
+		} else {
+			$parent = $theme->parent();
+			if ( ! empty( $parent) ) {
+				$current_theme_version = $parent->Version;
+			}
+		}
+	}
+
+	return $current_theme_version;
 }
 
 /**
